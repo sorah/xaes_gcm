@@ -33,16 +33,28 @@ module Xaes256gcm
       alias to_s inspect
     end
 
+    def enable_hazmat!
+      @enable_hazmat = true
+      self
+    end
+
     def apply(cipher, nonce: OpenSSL::Random.random_bytes(NONCE_SIZE))
       raise ArgumentError, "cipher must be AES-256-GCM" unless cipher.name == "AES-256-GCM"
 
-      dk = derive_key(nonce:)
+      dk = derive_key_raw(nonce:)
       cipher.key = dk.key
       cipher.iv = dk.nonce
       nonce
     end
 
     def derive_key(nonce:)
+      raise RuntimeError, "derive_key is a hazmat API that exposes raw key material; call enable_hazmat! on the Key instance to use it directly" unless @enable_hazmat
+      derive_key_raw(nonce:)
+    end
+
+    private
+
+    def derive_key_raw(nonce:)
       raise ArgumentError, "nonce must be #{NONCE_SIZE} bytes" unless nonce.bytesize == NONCE_SIZE
 
       n12 = nonce.b[0, 12]
@@ -59,8 +71,6 @@ module Xaes256gcm
 
       DerivedKey.new(key: derived, nonce: nonce.b[12, 12])
     end
-
-    private
 
     def xor_blocks(a, b)
       a_bytes = a.unpack('C*')

@@ -16,11 +16,13 @@ module Xaes256gcm
 
   class Key
     def initialize: (String key) -> void
+    def enable_hazmat!: () -> self
     def apply: (OpenSSL::Cipher cipher, ?nonce: String) -> String
     def derive_key: (nonce: String) -> DerivedKey
 
     private
 
+    def derive_key_raw: (nonce: String) -> DerivedKey
     def xor_blocks: (String a, String b) -> String
   end
 end
