@@ -7,6 +7,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
+    container:
+      image: ghcr.io/sorah-rbpkg/ruby:${{ matrix.ruby }}-dev-trixie
     strategy:
       matrix:
         ruby:
@@ -19,8 +21,10 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
+          path: vendor/bundle
+          key: bundle-${{ matrix.ruby }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes256gcm.gemspec') }}
+          restore-keys: bundle-${{ matrix.ruby }}-
+      - run: bundle install --path vendor/bundle
       - run: bundle exec rake
