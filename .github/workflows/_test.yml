@@ -6,25 +6,41 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    container:
-      image: public.ecr.aws/sorah/ruby:${{ matrix.ruby }}-dev-trixie
+    name: "Ruby ${{ matrix.ruby }}${{ matrix.image && ' (trixie)' || '' }}"
+    container: ${{ matrix.image && fromJSON(format('{"image":"{0}"}', matrix.image)) || '' }}
     strategy:
+      fail-fast: false
       matrix:
         ruby:
           - '3.2'
           - '3.3'
           - '3.4'
           - '4.0'
+        image:
+          - ''
+        include:
+          - ruby: '3.3'
+            image: 'public.ecr.aws/sorah/ruby:3.3-dev-trixie'
+          - ruby: '3.4'
+            image: 'public.ecr.aws/sorah/ruby:3.4-dev-trixie'
+          - ruby: '4.0'
+            image: 'public.ecr.aws/sorah/ruby:4.0-dev-trixie'
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - uses: ruby/setup-ruby@09a7688d3b55cf0e976497ff046b70949eeaccfd # v1.288.0
+        if: ${{ !matrix.image }}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        if: ${{ matrix.image }}
         with:
           path: vendor/bundle
-          key: bundle-${{ matrix.ruby }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes256gcm.gemspec') }}
-          restore-keys: bundle-${{ matrix.ruby }}-
+          key: bundle-${{ matrix.image }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes256gcm.gemspec') }}
+          restore-keys: bundle-${{ matrix.image }}-
       - run: bundle install --path vendor/bundle
+        if: ${{ matrix.image }}
       - run: bundle exec rake
