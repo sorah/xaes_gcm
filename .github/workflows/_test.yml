@@ -18,6 +18,7 @@ jobs:
           - '4.0'
         image:
           - ''
+        # Trixie provides OpenSSL 3.5, needed for the accumulated test vector (EVP_DigestSqueeze requires OpenSSL 3.3+)
         include:
           - ruby: '3.3'
             image: 'ghcr.io/sorah-rbpkg/ruby:3.3-dev-trixie'
