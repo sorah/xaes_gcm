@@ -36,7 +36,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - run: apt-get update && apt-get install -y --no-install-recommends libffi-dev
+      - run: apt-get update && apt-get install -y --no-install-recommends libffi-dev libyaml-dev
         if: ${{ matrix.image }}
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         if: ${{ matrix.image }}
