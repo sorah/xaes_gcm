@@ -7,7 +7,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: "Ruby ${{ matrix.ruby }}${{ matrix.image && ' (trixie)' || '' }}"
-    container: ${{ matrix.image && fromJSON(format('{"image":"{0}"}', matrix.image)) || '' }}
+    container: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
