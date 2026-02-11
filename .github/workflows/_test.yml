@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     container:
-      image: ghcr.io/sorah-rbpkg/ruby:${{ matrix.ruby }}-dev-trixie
+      image: public.ecr.aws/sorah/ruby:${{ matrix.ruby }}-dev-trixie
     strategy:
       matrix:
         ruby:
