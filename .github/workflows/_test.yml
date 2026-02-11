@@ -41,6 +41,6 @@ jobs:
           path: vendor/bundle
           key: bundle-${{ matrix.image }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes256gcm.gemspec') }}
           restore-keys: bundle-${{ matrix.image }}-
-      - run: bundle install --path vendor/bundle
+      - run: bundle config set --local path vendor/bundle && bundle install
         if: ${{ matrix.image }}
       - run: bundle exec rake
