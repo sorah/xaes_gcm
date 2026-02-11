@@ -19,7 +19,7 @@ module Xaes256gcm
         next_bit = (i < 15) ? (l.getbyte(i + 1) >> 7) : 0
         ((l.getbyte(i) << 1) | next_bit) & 0xFF
       end
-      k1_bytes[-1] ^= 0x87 if msb == 1
+      k1_bytes[-1] ^= 0x87 & -(msb & 1)
       @k1 = k1_bytes.pack('C*')
       @cipher.freeze
     end
@@ -63,7 +63,10 @@ module Xaes256gcm
     private
 
     def xor_blocks(a, b)
-      a.bytes.zip(b.bytes).map { |x, y| x ^ y }.pack('C*')
+      a_bytes = a.unpack('C*')
+      b_bytes = b.unpack('C*')
+      a_bytes.length.times { |i| a_bytes[i] ^= b_bytes[i] }
+      a_bytes.pack('C*')
     end
   end
 end
