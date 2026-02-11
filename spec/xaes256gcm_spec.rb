@@ -6,17 +6,23 @@ require "fiddle"
 # Supports both streaming squeeze (for deterministic RNG) and update+squeeze
 # (for accumulating a digest).
 module ShakeHelper
-  LIBCRYPTO = Fiddle.dlopen("libcrypto.so")
-  EVP_MD_FETCH = Fiddle::Function.new(LIBCRYPTO["EVP_MD_fetch"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOIDP)
-  EVP_MD_CTX_NEW = Fiddle::Function.new(LIBCRYPTO["EVP_MD_CTX_new"], [], Fiddle::TYPE_VOIDP)
-  EVP_DIGEST_INIT_EX = Fiddle::Function.new(LIBCRYPTO["EVP_DigestInit_ex"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_INT)
-  EVP_DIGEST_UPDATE = Fiddle::Function.new(LIBCRYPTO["EVP_DigestUpdate"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T], Fiddle::TYPE_INT)
-  EVP_DIGEST_SQUEEZE = Fiddle::Function.new(LIBCRYPTO["EVP_DigestSqueeze"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T], Fiddle::TYPE_INT)
-  EVP_MD_CTX_FREE = Fiddle::Function.new(LIBCRYPTO["EVP_MD_CTX_free"], [Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOID)
-  SHAKE128_MD = EVP_MD_FETCH.call(nil, "SHAKE128", nil)
+  AVAILABLE = begin
+    libcrypto = Fiddle.dlopen("libcrypto.so")
+    EVP_MD_FETCH = Fiddle::Function.new(libcrypto["EVP_MD_fetch"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOIDP)
+    EVP_MD_CTX_NEW = Fiddle::Function.new(libcrypto["EVP_MD_CTX_new"], [], Fiddle::TYPE_VOIDP)
+    EVP_DIGEST_INIT_EX = Fiddle::Function.new(libcrypto["EVP_DigestInit_ex"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_INT)
+    EVP_DIGEST_UPDATE = Fiddle::Function.new(libcrypto["EVP_DigestUpdate"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T], Fiddle::TYPE_INT)
+    EVP_DIGEST_SQUEEZE = Fiddle::Function.new(libcrypto["EVP_DigestSqueeze"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_SIZE_T], Fiddle::TYPE_INT)
+    EVP_MD_CTX_FREE = Fiddle::Function.new(libcrypto["EVP_MD_CTX_free"], [Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOID)
+    SHAKE128_MD = EVP_MD_FETCH.call(nil, "SHAKE128", nil)
+    true
+  rescue Fiddle::DLError
+    false
+  end
 
   class Shake128
     def initialize
+      raise "ShakeHelper not available (requires OpenSSL 3.3+)" unless AVAILABLE
       @ctx = ShakeHelper::EVP_MD_CTX_NEW.call
       raise "EVP_MD_CTX_new failed" if @ctx.null?
       ret = ShakeHelper::EVP_DIGEST_INIT_EX.call(@ctx, ShakeHelper::SHAKE128_MD, nil)
@@ -160,6 +166,8 @@ RSpec.describe Xaes256gcm do
       end
 
       context "accumulated randomized test (10,000 iterations)" do
+        before { pending "requires OpenSSL 3.3+ (EVP_DigestSqueeze)" unless ShakeHelper::AVAILABLE }
+
         it "produces the expected SHAKE-128 digest over all ciphertexts" do
           iterations = 10_000
           expected = "e6b9edf2df6cec60c8cbd864e2211b597fb69a529160cd040d56c0c210081939"
