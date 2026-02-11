@@ -20,11 +20,11 @@ jobs:
           - ''
         include:
           - ruby: '3.3'
-            image: 'public.ecr.aws/sorah/ruby:3.3-dev-trixie'
+            image: 'ghcr.io/sorah-rbpkg/ruby:3.3-dev-trixie'
           - ruby: '3.4'
-            image: 'public.ecr.aws/sorah/ruby:3.4-dev-trixie'
+            image: 'ghcr.io/sorah-rbpkg/ruby:3.4-dev-trixie'
           - ruby: '4.0'
-            image: 'public.ecr.aws/sorah/ruby:4.0-dev-trixie'
+            image: 'ghcr.io/sorah-rbpkg/ruby:4.0-dev-trixie'
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
