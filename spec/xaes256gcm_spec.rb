@@ -7,7 +7,11 @@ require "fiddle"
 # (for accumulating a digest).
 module ShakeHelper
   AVAILABLE = begin
-    libcrypto = Fiddle.dlopen("libcrypto.so")
+    libcrypto = begin
+      Fiddle.dlopen("libcrypto.so")
+    rescue Fiddle::DLError
+      Fiddle.dlopen("libcrypto.so.3")
+    end
     EVP_MD_FETCH = Fiddle::Function.new(libcrypto["EVP_MD_fetch"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_VOIDP)
     EVP_MD_CTX_NEW = Fiddle::Function.new(libcrypto["EVP_MD_CTX_new"], [], Fiddle::TYPE_VOIDP)
     EVP_DIGEST_INIT_EX = Fiddle::Function.new(libcrypto["EVP_DigestInit_ex"], [Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP, Fiddle::TYPE_VOIDP], Fiddle::TYPE_INT)
