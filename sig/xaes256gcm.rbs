@@ -1,0 +1,26 @@
+module Xaes256gcm
+  VERSION: String
+  KEY_SIZE: Integer
+  NONCE_SIZE: Integer
+
+  class Error < StandardError
+  end
+
+  class DerivedKey
+    attr_reader key: String
+    attr_reader nonce: String
+
+    def self.new: (key: String, nonce: String) -> DerivedKey
+    def self.[]: (key: String, nonce: String) -> DerivedKey
+  end
+
+  class Key
+    def initialize: (String key) -> void
+    def apply: (OpenSSL::Cipher cipher, ?nonce: String) -> String
+    def derive_key: (nonce: String) -> DerivedKey
+
+    private
+
+    def xor_blocks: (String a, String b) -> String
+  end
+end
