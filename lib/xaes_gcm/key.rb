@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Xaes256gcm
+module XaesGcm
   class Key
     def initialize(key)
       raise ArgumentError, "key must be #{KEY_SIZE} bytes" unless key.bytesize == KEY_SIZE

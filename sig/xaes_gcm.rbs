@@ -1,4 +1,4 @@
-module Xaes256gcm
+module XaesGcm
   VERSION: String
   KEY_SIZE: Integer
   NONCE_SIZE: Integer

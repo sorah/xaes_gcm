@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "xaes256gcm"
+require "xaes_gcm"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -1,4 +1,4 @@
-# xaes256gcm
+# xaes_gcm
 
 Ruby implementation of [XAES-256-GCM](https://c2sp.org/XAES-256-GCM), an extended-nonce AEAD built on AES-256-GCM.
 
@@ -14,23 +14,23 @@ This gem implements the key and nonce derivation step of XAES-256-GCM. It derive
 ## Installation
 
 ```bash
-bundle add xaes256gcm
+bundle add xaes_gcm
 ```
 
 Or install directly:
 
 ```bash
-gem install xaes256gcm
+gem install xaes_gcm
 ```
 
 ## Usage
 
 ```ruby
-require "xaes256gcm"
+require "xaes_gcm"
 
 # Create a reusable key (precomputes the AES key schedule and subkey)
-key = OpenSSL::Random.random_bytes(Xaes256gcm::KEY_SIZE) # 32 bytes
-xkey = Xaes256gcm::Key.new(key)
+key = OpenSSL::Random.random_bytes(XaesGcm::KEY_SIZE) # 32 bytes
+xkey = XaesGcm::Key.new(key)
 
 # Encrypt (generates a random 192-bit nonce by default)
 cipher = OpenSSL::Cipher.new("aes-256-gcm")

@@ -53,35 +53,35 @@ module ShakeHelper
   end
 end
 
-RSpec.describe Xaes256gcm do
+RSpec.describe XaesGcm do
   it "has a version number" do
-    expect(Xaes256gcm::VERSION).not_to be_nil
+    expect(XaesGcm::VERSION).not_to be_nil
   end
 
   describe "constants" do
     it "defines KEY_SIZE as 32" do
-      expect(Xaes256gcm::KEY_SIZE).to eq(32)
+      expect(XaesGcm::KEY_SIZE).to eq(32)
     end
 
     it "defines NONCE_SIZE as 24" do
-      expect(Xaes256gcm::NONCE_SIZE).to eq(24)
+      expect(XaesGcm::NONCE_SIZE).to eq(24)
     end
   end
 
-  describe Xaes256gcm::Key do
+  describe XaesGcm::Key do
     describe "#initialize" do
       it "raises ArgumentError for wrong key size" do
-        expect { Xaes256gcm::Key.new("\x00" * 16) }.to raise_error(ArgumentError, /key must be 32 bytes/)
-        expect { Xaes256gcm::Key.new("\x00" * 33) }.to raise_error(ArgumentError, /key must be 32 bytes/)
+        expect { XaesGcm::Key.new("\x00" * 16) }.to raise_error(ArgumentError, /key must be 32 bytes/)
+        expect { XaesGcm::Key.new("\x00" * 33) }.to raise_error(ArgumentError, /key must be 32 bytes/)
       end
 
       it "accepts a 32-byte key" do
-        expect { Xaes256gcm::Key.new("\x00" * 32) }.not_to raise_error
+        expect { XaesGcm::Key.new("\x00" * 32) }.not_to raise_error
       end
     end
 
     describe "#apply" do
-      let(:key) { Xaes256gcm::Key.new("\x01" * 32) }
+      let(:key) { XaesGcm::Key.new("\x01" * 32) }
       let(:nonce) { "ABCDEFGHIJKLMNOPQRSTUVWX" }
 
       it "raises ArgumentError for non AES-256-GCM cipher" do
@@ -104,25 +104,25 @@ RSpec.describe Xaes256gcm do
         cipher = OpenSSL::Cipher.new("aes-256-gcm")
         cipher.encrypt
         returned_nonce = key.apply(cipher)
-        expect(returned_nonce.bytesize).to eq(Xaes256gcm::NONCE_SIZE)
+        expect(returned_nonce.bytesize).to eq(XaesGcm::NONCE_SIZE)
       end
     end
 
     describe "#derive_key" do
       it "raises RuntimeError without enable_hazmat!" do
-        key = Xaes256gcm::Key.new("\x00" * 32)
+        key = XaesGcm::Key.new("\x00" * 32)
         expect { key.derive_key(nonce: "\x00" * 24) }.to raise_error(RuntimeError, /hazmat/)
       end
 
       it "raises ArgumentError for wrong nonce size" do
-        key = Xaes256gcm::Key.new("\x00" * 32)
+        key = XaesGcm::Key.new("\x00" * 32)
         key.enable_hazmat!
         expect { key.derive_key(nonce: "\x00" * 12) }.to raise_error(ArgumentError, /nonce must be 24 bytes/)
         expect { key.derive_key(nonce: "\x00" * 25) }.to raise_error(ArgumentError, /nonce must be 24 bytes/)
       end
 
       context "test vector 1 (MSB(L)=0, key=0x01*32)" do
-        let(:key) { Xaes256gcm::Key.new("\x01" * 32).enable_hazmat! }
+        let(:key) { XaesGcm::Key.new("\x01" * 32).enable_hazmat! }
         let(:nonce) { "ABCDEFGHIJKLMNOPQRSTUVWX" }
         let(:dk) { key.derive_key(nonce:) }
 
@@ -146,7 +146,7 @@ RSpec.describe Xaes256gcm do
       end
 
       context "test vector 2 (MSB(L)=1, key=0x03*32)" do
-        let(:key) { Xaes256gcm::Key.new("\x03" * 32).enable_hazmat! }
+        let(:key) { XaesGcm::Key.new("\x03" * 32).enable_hazmat! }
         let(:nonce) { "ABCDEFGHIJKLMNOPQRSTUVWX" }
         let(:dk) { key.derive_key(nonce:) }
 
@@ -170,7 +170,7 @@ RSpec.describe Xaes256gcm do
       end
 
       context "accumulated randomized test (10,000 iterations)" do
-        before { pending "requires OpenSSL 3.3+ (EVP_DigestSqueeze)" unless ShakeHelper::AVAILABLE || ENV["XAES256GCM_TEST_REQUIRE_SHAKE"] == "1" }
+        before { pending "requires OpenSSL 3.3+ (EVP_DigestSqueeze)" unless ShakeHelper::AVAILABLE || ENV["XAES_GCM_TEST_REQUIRE_SHAKE"] == "1" }
 
         it "produces the expected SHAKE-128 digest over all ciphertexts" do
           iterations = 10_000
@@ -187,7 +187,7 @@ RSpec.describe Xaes256gcm do
             aad_len = s.squeeze(1).getbyte(0)
             aad = aad_len > 0 ? s.squeeze(aad_len) : "".b
 
-            xkey = Xaes256gcm::Key.new(key_bytes)
+            xkey = XaesGcm::Key.new(key_bytes)
             xkey.enable_hazmat!
             dk = xkey.derive_key(nonce: nonce_bytes)
 

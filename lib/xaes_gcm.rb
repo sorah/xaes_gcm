@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "openssl"
-require_relative "xaes256gcm/version"
+require_relative "xaes_gcm/version"
 
-module Xaes256gcm
+module XaesGcm
   class Error < StandardError; end
 
   KEY_SIZE = 32
@@ -27,4 +27,4 @@ module Xaes256gcm
   end
 end
 
-require_relative "xaes256gcm/key"
+require_relative "xaes_gcm/key"

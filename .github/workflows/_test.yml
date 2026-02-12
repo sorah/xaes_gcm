@@ -42,10 +42,10 @@ jobs:
         if: ${{ matrix.image }}
         with:
           path: vendor/bundle
-          key: bundle-${{ matrix.image }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes256gcm.gemspec') }}
+          key: bundle-${{ matrix.image }}-${{ hashFiles('Gemfile', 'Gemfile.lock', 'xaes_gcm.gemspec') }}
           restore-keys: bundle-${{ matrix.image }}-
       - run: bundle config set --local path vendor/bundle && bundle install
         if: ${{ matrix.image }}
       - run: bundle exec rake
         env:
-          XAES256GCM_TEST_REQUIRE_SHAKE: ${{ matrix.image && '1' || '' }}
+          XAES_GCM_TEST_REQUIRE_SHAKE: ${{ matrix.image && '1' || '' }}

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in xaes256gcm.gemspec
+# Specify your gem's dependencies in xaes_gcm.gemspec
 gemspec
 
 gem "irb"
