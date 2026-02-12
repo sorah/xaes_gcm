@@ -170,7 +170,7 @@ RSpec.describe Xaes256gcm do
       end
 
       context "accumulated randomized test (10,000 iterations)" do
-        before { pending "requires OpenSSL 3.3+ (EVP_DigestSqueeze)" unless ShakeHelper::AVAILABLE || ENV["XAES256GCM_TEST_REQUIRE_SHAKE"] }
+        before { pending "requires OpenSSL 3.3+ (EVP_DigestSqueeze)" unless ShakeHelper::AVAILABLE || ENV["XAES256GCM_TEST_REQUIRE_SHAKE"] == "1" }
 
         it "produces the expected SHAKE-128 digest over all ciphertexts" do
           iterations = 10_000
