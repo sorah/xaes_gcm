@@ -10,8 +10,8 @@ module XaesGcm
       @cipher.padding = 0
       @cipher.key = key
 
-      # L = AES-256-ECB_K(0^128)
-      l = @cipher.update("\x00" * 16) + @cipher.final
+      raise "unexpected cipher block size" unless @cipher.block_size == 16
+      l = @cipher.update("\x00" * @cipher.block_size)
 
       # K1: shift L left by 1 bit, XOR last byte with 0x87 if MSB was set
       msb = l.getbyte(0) >> 7
