@@ -29,13 +29,13 @@ gem install xaes_gcm
 require "xaes_gcm"
 
 # Create a reusable key (precomputes the AES key schedule and subkey)
-key = OpenSSL::Random.random_bytes(XaesGcm::Xaes256gcm::KEY_SIZE) # 32 bytes
-xkey = XaesGcm.key(256, key)
+raw_key = OpenSSL::Random.random_bytes(XaesGcm::Xaes256gcm::KEY_SIZE) # 32 bytes
+key = XaesGcm.key(256, raw_key)
 
 # Encrypt (generates a random 192-bit nonce by default)
 cipher = OpenSSL::Cipher.new("aes-256-gcm")
 cipher.encrypt
-nonce = xkey.apply(cipher)
+nonce = key.apply(cipher)
 cipher.auth_data = "optional authenticated data"
 ciphertext = cipher.update(plaintext) + cipher.final
 tag = cipher.auth_tag
@@ -43,7 +43,7 @@ tag = cipher.auth_tag
 # Decrypt (pass the same nonce used for encryption)
 decipher = OpenSSL::Cipher.new("aes-256-gcm")
 decipher.decrypt
-xkey.apply(decipher, nonce:)
+key.apply(decipher, nonce:)
 decipher.auth_tag = tag
 decipher.auth_data = "optional authenticated data"
 plaintext = decipher.update(ciphertext) + decipher.final
