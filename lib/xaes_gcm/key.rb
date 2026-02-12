@@ -12,6 +12,7 @@ module XaesGcm
 
       raise "unexpected cipher block size" unless @cipher.block_size == 16
       l = @cipher.update("\x00" * @cipher.block_size)
+      @cipher.freeze
 
       # K1: shift L left by 1 bit, XOR last byte with 0x87 if MSB was set
       msb = l.getbyte(0) >> 7
@@ -21,7 +22,6 @@ module XaesGcm
       end
       k1_bytes[-1] ^= 0b10000111 & -(msb & 1)
       @k1 = k1_bytes.pack('C*')
-      @cipher.freeze
     end
 
     if HAVE_INSTANCE_VARIABLES_TO_INSPECT
