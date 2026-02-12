@@ -66,8 +66,7 @@ module XaesGcm
       m2_xored = xor_blocks(m2, @k1)
 
       cipher = @cipher.dup
-      cipher.reset
-      derived = cipher.update(m1_xored + m2_xored) + cipher.final
+      derived = cipher.update(m1_xored + m2_xored)
 
       DerivedKey.new(key: derived, nonce: nonce.byteslice(12, 12))
     end
