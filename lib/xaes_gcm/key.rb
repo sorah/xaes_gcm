@@ -57,7 +57,7 @@ module XaesGcm
     def derive_key_raw(nonce:)
       raise ArgumentError, "nonce must be #{NONCE_SIZE} bytes" unless nonce.bytesize == NONCE_SIZE
 
-      n12 = nonce.b[0, 12]
+      n12 = nonce.byteslice(0, 12)
 
       m1 = "\x00\x01X\x00".b + n12
       m2 = "\x00\x02X\x00".b + n12
@@ -69,7 +69,7 @@ module XaesGcm
       cipher.reset
       derived = cipher.update(m1_xored + m2_xored) + cipher.final
 
-      DerivedKey.new(key: derived, nonce: nonce.b[12, 12])
+      DerivedKey.new(key: derived, nonce: nonce.byteslice(12, 12))
     end
 
     def xor_blocks(a, b)
