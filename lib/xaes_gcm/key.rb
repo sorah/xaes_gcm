@@ -59,8 +59,8 @@ module XaesGcm
 
       n12 = nonce.byteslice(0, 12)
 
-      m1 = "\x00\x01X\x00".b + n12
-      m2 = "\x00\x02X\x00".b + n12
+      m1 = "\x00\x01\x58\x00".b + n12
+      m2 = "\x00\x02\x58\x00".b + n12
 
       m1_xored = xor_blocks(m1, @k1)
       m2_xored = xor_blocks(m2, @k1)
