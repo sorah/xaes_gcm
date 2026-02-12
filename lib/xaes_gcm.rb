@@ -6,9 +6,6 @@ require_relative "xaes_gcm/version"
 module XaesGcm
   class Error < StandardError; end
 
-  KEY_SIZE = 32
-  NONCE_SIZE = 24
-
   # Detect instance_variables_to_inspect support (Ruby feature #13555)
   HAVE_INSTANCE_VARIABLES_TO_INSPECT = begin
     klass = Class.new do
@@ -18,13 +15,10 @@ module XaesGcm
     !klass.new.inspect.include?("@secret")
   end
 
-  DerivedKey = Data.define(:key, :nonce) do
-    # Data.define#inspect doesn't use instance_variables_to_inspect
-    def inspect
-      "#<#{self.class}>"
-    end
-    alias to_s inspect
+  def self.key(key_length, key)
+    raise ArgumentError, "unsupported key length: #{key_length}" unless key_length == 256
+    Xaes256gcm::Key.new(key)
   end
 end
 
-require_relative "xaes_gcm/key"
+require_relative "xaes_gcm/xaes256gcm"

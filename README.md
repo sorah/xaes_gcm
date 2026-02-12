@@ -29,8 +29,8 @@ gem install xaes_gcm
 require "xaes_gcm"
 
 # Create a reusable key (precomputes the AES key schedule and subkey)
-key = OpenSSL::Random.random_bytes(XaesGcm::KEY_SIZE) # 32 bytes
-xkey = XaesGcm::Key.new(key)
+key = OpenSSL::Random.random_bytes(XaesGcm::Xaes256gcm::KEY_SIZE) # 32 bytes
+xkey = XaesGcm.key(256, key)
 
 # Encrypt (generates a random 192-bit nonce by default)
 cipher = OpenSSL::Cipher.new("aes-256-gcm")
@@ -60,6 +60,7 @@ Key differences:
 - Smaller code footprint
   - Leaving OpenSSL::Cipher setup to the user
 - Accumulated randomized test vectors are included in the test suite
+- rbs signature
 
 ## License
 
