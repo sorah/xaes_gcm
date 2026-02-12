@@ -17,9 +17,9 @@ module XaesGcm
       msb = l.getbyte(0) >> 7
       k1_bytes = Array.new(16) do |i|
         next_bit = (i < 15) ? (l.getbyte(i + 1) >> 7) : 0
-        ((l.getbyte(i) << 1) | next_bit) & 0xFF
+        ((l.getbyte(i) << 1) | next_bit) & 0b11111111
       end
-      k1_bytes[-1] ^= 0x87 & -(msb & 1)
+      k1_bytes[-1] ^= 0b10000111 & -(msb & 1)
       @k1 = k1_bytes.pack('C*')
       @cipher.freeze
     end
