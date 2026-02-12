@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    xaes_gcm (0.1.1)
+    xaes_gcm (0.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -77,7 +77,7 @@ CHECKSUMS
   rspec-support (3.13.7) sha256=0640e5570872aafefd79867901deeeeb40b0c9875a36b983d85f54fb7381c47c
   stringio (3.2.0) sha256=c37cb2e58b4ffbd33fe5cd948c05934af997b36e0b6ca6fdf43afa234cf222e1
   tsort (0.2.0) sha256=9650a793f6859a43b6641671278f79cfead60ac714148aabe4e3f0060480089f
-  xaes_gcm (0.1.1)
+  xaes_gcm (0.2.0)
 
 BUNDLED WITH
   4.0.4
